@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "nodemon -e ts --exec ts-node howidonode.ts"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
