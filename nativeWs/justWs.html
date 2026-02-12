@@ -1,5 +1,10 @@
 <script>
   let ws = new WebSocket('ws://localhost:8080');
-  console.log('WebSocket created');
-  console.log(ws);
+  ws.onopen = () => {
+    console.log('WebSocket is open now.');
+    ws.send('Hello Server!');
+  };
+  ws.onmessage = (message) => {
+    console.log('Received from server: ' + message.data);
+  };
 </script>
