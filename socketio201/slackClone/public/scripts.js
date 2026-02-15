@@ -1,3 +1,4 @@
+import joinNs from './joinNs.js';
 const socket = io('http://localhost:9000');
 
 socket.on('connect', () => {
@@ -6,7 +7,11 @@ socket.on('connect', () => {
 
 //listen for nsList, which is the list of namespaces that the server sent us
 socket.on('nsList', (nsData) => {
+  const lastNs = localStorage.getItem('lastNs');
+
   const namespacesDiv = document.querySelector('.namespaces');
+
+  namespacesDiv.innerHTML = '';
   nsData.forEach((ns) => {
     namespacesDiv.innerHTML += ` <div class="namespace" ns="${ns.endpoint}"><img src="${ns.image}"></div>`;
   });
@@ -14,15 +19,14 @@ socket.on('nsList', (nsData) => {
   //add click listener to each namespace
   document.querySelectorAll('.namespace').forEach((elem) => {
     elem.addEventListener('click', (e) => {
-      const nsEndpoint = elem.getAttribute('ns');
-      const clickedNs = nsData.find((ns) => ns.endpoint === nsEndpoint);
-      const rooms = clickedNs.rooms;
-      let roomList = document.querySelector('.room-list');
-      roomList.innerHTML = '';
-
-      rooms.forEach((room) => {
-        roomList.innerHTML += ` <li><span class="glyphicon glyphicon-lock"></span>${room.roomTitle}</li>`;
-      });
+      joinNs(elem, nsData);
     });
   });
+
+  if (lastNs) {
+    const elem = document.querySelector(`.namespace[ns="${lastNs}"]`);
+    joinNs(elem, nsData);
+  } else {
+    joinNs(document.getElementsByClassName('namespace')[0], nsData);
+  }
 });
