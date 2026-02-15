@@ -9,9 +9,8 @@ socket.on('connect', () => {
 
 //listen for nsList, which is the list of namespaces that the server sent us
 socket.on('nsList', (nsData) => {
-   const namespacesDiv = document.querySelector('.namespaces')
+  const namespacesDiv = document.querySelector('.namespaces');
   nsData.forEach((ns) => {
-    namespacesDiv.innerHTML +=
-      ` <div class="namespace" ns="${ns.name}"><img src="${ns.img}"></div>`;
+    namespacesDiv.innerHTML += ` <div class="namespace" ns="${ns.name}"><img src="${ns.image}"></div>`;
   });
 });
