@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import namespaces from './data/namespaces.js';
 
 const app = express();
 
@@ -15,7 +16,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 
 io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+  socket.emit('nsList', namespaces);
 });
 
 httpServer.listen(9000, () => {
