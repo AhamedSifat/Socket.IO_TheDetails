@@ -51,7 +51,11 @@
   socket.on('newMessageToClients', (message) => {
     document.querySelector('#messages').innerHTML += `<li>${message.text}</li>`;
   });
-  8;
+
+  adminSocket.on('connect', () => {
+    console.log('Admin Socket Connected!');
+  });
+
   document.getElementById('message-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const messageInput = document.getElementById('user-message');
