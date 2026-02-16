@@ -48,12 +48,20 @@
     console.log(dataFromServer);
   });
 
+  socket.on('welcomeToChatRoom', (message) => {
+    console.log(message.data);
+  });
+
   socket.on('newMessageToClients', (message) => {
     document.querySelector('#messages').innerHTML += `<li>${message.text}</li>`;
   });
 
   adminSocket.on('connect', () => {
     console.log('Admin Socket Connected!');
+  });
+
+  adminSocket.on('welcomeToChatRoom', () => {
+    console.log('Admin chat room fired');
   });
 
   document.getElementById('message-form').addEventListener('submit', (e) => {
