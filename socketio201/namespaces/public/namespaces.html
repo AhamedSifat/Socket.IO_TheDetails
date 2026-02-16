@@ -21,8 +21,8 @@
   }
   #message li:nth-child(odd) {
     background: #aaa;
-  }
-</style>
+  }</style
+>=
 
 <div class="container text-center">
   <form class="row" id="message-form">
@@ -38,3 +38,25 @@
     <!-- THIS WILL BE POPULATED BY JAVASCRIPT! -->
   </ul>
 </div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io('http://localhost:8000');
+  const adminSocket = io('http://localhost:8000/admin');
+  socket.on('connect', () => {});
+
+  socket.on('messageFromServer', (dataFromServer) => {
+    console.log(dataFromServer);
+  });
+
+  socket.on('newMessageToClients', (message) => {
+    document.querySelector('#messages').innerHTML += `<li>${message.text}</li>`;
+  });
+  8;
+  document.getElementById('message-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const messageInput = document.getElementById('user-message');
+    const message = messageInput.value;
+    socket.emit('newMessageToServer', { text: message });
+    messageInput.value = '';
+  });
+</script>

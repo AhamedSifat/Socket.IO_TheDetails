@@ -18,6 +18,12 @@ io.on('connection', (socket) => {
   });
 });
 
+const adminNamespace = io.of('/admin');
+
+adminNamespace.on('connection', (socket) => {
+  console.log(socket.id + 'has joined /admin');
+});
+
 httpServer.listen(8000, () => {
   console.log('Server is running on port 8000');
 });
