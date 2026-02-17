@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import namespaces from './data/namespaces.js';
+import Room from './classes/Room.js';
 
 const app = express();
 
@@ -15,6 +16,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
+app.get('/change-namespace', (req, res) => {
+  namespaces[0].addRoom(new Room(0, 'Deleted Articles', namespaces[0].id));
+  io.of(namespaces[0].endpoint).emit('nsChange', namespaces[0]);
+});
+
 io.on('connection', (socket) => {
   socket.on('clientConnect', () => {
     socket.emit('nsList', namespaces);
@@ -23,7 +29,7 @@ io.on('connection', (socket) => {
 
 namespaces.forEach((namespace) => {
   io.of(namespace.endpoint).on('connection', (socket) => {
-    console.log(`${socket.id} has connected to ${namespace.endpoint}`);
+    console.log(`someone connected to namespace ${namespace.endpoint}`);
   });
 });
 

@@ -1,8 +1,25 @@
 import joinNs from './joinNs.js';
 const socket = io('http://localhost:9000');
 
+const namespaceSocket = [];
+const listers = {
+  nsChange: [],
+};
+
+const addListeners = (nsId) => {
+  if (!listers.nsChange[nsId]) {
+    namespaceSocket[nsId].on('nsChange', (newNsData) => {
+      console.log('namespace has changed');
+      console.log(newNsData);
+    });
+
+    listers.nsChange[nsId] = true;
+  } else {
+    console.log('already listening to nsChange for this namespace');
+  }
+};
+
 socket.on('connect', () => {
-  console.log('Connected to server with ID:', socket.id);
   socket.emit('clientConnect');
 });
 
@@ -16,7 +33,11 @@ socket.on('nsList', (nsData) => {
     namespacesDiv.innerHTML += ` <div class="namespace" ns="${ns.endpoint}"><img src="${ns.image}"></div>`;
     //join this namespace with io
 
-    io(`http://localhost:9000${ns.endpoint}`);
+    if (!namespaceSocket[ns.id]) {
+      namespaceSocket[ns.id] = io(`http://localhost:9000${ns.endpoint}`);
+    }
+    addListeners(ns.id);
+
   });
 
   //add click listener to each namespace
@@ -25,6 +46,8 @@ socket.on('nsList', (nsData) => {
       joinNs(elem, nsData);
     });
   });
+
+
 
   if (lastNs) {
     const elem = document.querySelector(`.namespace[ns="${lastNs}"]`);
