@@ -16,7 +16,15 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 
 io.on('connection', (socket) => {
-  socket.emit('nsList', namespaces);
+  socket.on('clientConnect', () => {
+    socket.emit('nsList', namespaces);
+  });
+});
+
+namespaces.forEach((namespace) => {
+  io.of(namespace.endpoint).on('connection', (socket) => {
+    console.log(`${socket.id} has connected to ${namespace.endpoint}`);
+  });
 });
 
 httpServer.listen(9000, () => {

@@ -3,17 +3,20 @@ const socket = io('http://localhost:9000');
 
 socket.on('connect', () => {
   console.log('Connected to server with ID:', socket.id);
+  socket.emit('clientConnect');
 });
 
 //listen for nsList, which is the list of namespaces that the server sent us
 socket.on('nsList', (nsData) => {
   const lastNs = localStorage.getItem('lastNs');
-
   const namespacesDiv = document.querySelector('.namespaces');
 
   namespacesDiv.innerHTML = '';
   nsData.forEach((ns) => {
     namespacesDiv.innerHTML += ` <div class="namespace" ns="${ns.endpoint}"><img src="${ns.image}"></div>`;
+    //join this namespace with io
+
+    io(`http://localhost:9000${ns.endpoint}`);
   });
 
   //add click listener to each namespace
