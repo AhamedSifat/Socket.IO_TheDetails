@@ -1,7 +1,7 @@
 import joinNs from './joinNs.js';
 const socket = io('http://localhost:9000');
 
-const namespaceSocket = [];
+export const namespaceSocket = [];
 const listers = {
   nsChange: [],
 };
@@ -37,17 +37,14 @@ socket.on('nsList', (nsData) => {
       namespaceSocket[ns.id] = io(`http://localhost:9000${ns.endpoint}`);
     }
     addListeners(ns.id);
-
   });
 
   //add click listener to each namespace
-  document.querySelectorAll('.namespace').forEach((elem) => {
-    elem.addEventListener('click', (e) => {
-      joinNs(elem, nsData);
+  document.querySelectorAll('.namespace').forEach((element) => {
+    element.addEventListener('click', (e) => {
+      joinNs(element, nsData);
     });
   });
-
-
 
   if (lastNs) {
     const elem = document.querySelector(`.namespace[ns="${lastNs}"]`);

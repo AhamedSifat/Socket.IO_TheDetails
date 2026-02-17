@@ -29,7 +29,9 @@ io.on('connection', (socket) => {
 
 namespaces.forEach((namespace) => {
   io.of(namespace.endpoint).on('connection', (socket) => {
-    console.log(`someone connected to namespace ${namespace.endpoint}`);
+    socket.on('joinRoom', (roomTitle) => {
+      socket.join(roomTitle);
+    });
   });
 });
 
