@@ -30,12 +30,9 @@ io.on('connection', (socket) => {
 namespaces.forEach((namespace) => {
   io.of(namespace.endpoint).on('connection', (socket) => {
     socket.on('joinRoom', async (roomTitle, ackCallback) => {
-
-
       // ---------- FIND OLD ROOM ----------
       let oldRoom;
       socket.rooms.forEach((room) => {
-
         if (room !== socket.id) {
           oldRoom = room;
           console.log(`leaving room ${oldRoom}`);
@@ -73,6 +70,14 @@ namespaces.forEach((namespace) => {
       io.of(namespace.endpoint).to(roomTitle).emit('updateMembers', {
         numUsers: count,
         room: roomTitle,
+      });
+
+      socket.on('newMessageToRoom', (msg) => {
+        //broadcast to everyone  this room that there is a new message
+        //how do we know which room the user is in? socket.rooms gives us a Set of rooms that this socket is in, including its own room with its id. So we just need to find the room that is not the socket.id
+        const rooms = socket.rooms;
+        const currentRoom = [...rooms][1];
+        io.of(namespace.endpoint).in(currentRoom).emit('messageToRoom', msg);
       });
     });
   });

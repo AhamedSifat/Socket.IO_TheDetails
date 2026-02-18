@@ -1,8 +1,9 @@
 import joinRoom from './JoinRoom.js';
-
+import { setSelectedNsId } from './scripts.js';
 const joinNs = (element, nsData) => {
   const nsEndpoint = element.getAttribute('ns');
   const clickedNs = nsData.find((ns) => ns.endpoint === nsEndpoint);
+  setSelectedNsId(clickedNs.id);
   const rooms = clickedNs.rooms;
   let roomList = document.querySelector('.room-list');
   roomList.innerHTML = '';

@@ -1,13 +1,39 @@
 import joinNs from './joinNs.js';
 const socket = io('http://localhost:9000');
 
+let username = 'Sifat';
+
 export const namespaceSocket = [];
-const listers = {
+const listeners = {
   nsChange: [],
+  messageToRoom: [],
 };
 
+//a global variable we can update when the user clicks on a namespaces
+export let selectedNsId = 0;
+
+export const setSelectedNsId = (id) => {
+  selectedNsId = id;
+};
+
+//add a submit listener to the message form
+document.querySelector('#message-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const newMessage = document.querySelector('#user-message').value;
+  namespaceSocket[selectedNsId].emit('newMessageToRoom', {
+    text: newMessage,
+    date: new Date(),
+    avatar: 'https://via.placeholder.com/30',
+    username: username,
+  });
+  document.querySelector('#user-message').value = '';
+});
+
+//addListener job is to manage all listeners added to add namespace
+//this prevents us from adding duplicate listeners when we rejoin a namespace that we have already joined before
+
 const addListeners = (nsId) => {
-  if (!listers.nsChange[nsId]) {
+  if (!listeners.nsChange[nsId]) {
     namespaceSocket[nsId].on('nsChange', (newNsData) => {
       console.log('namespace has changed');
       console.log(newNsData);
@@ -20,9 +46,14 @@ const addListeners = (nsId) => {
       }
     });
 
-    listers.nsChange[nsId] = true;
-  } else {
-    console.log('already listening to nsChange for this namespace');
+    listeners.nsChange[nsId] = true;
+  }
+
+  if (!listeners.messageToRoom[nsId]) {
+    namespaceSocket[nsId].on('messageToRoom', (msg) => {
+      console.log(msg);
+    });
+    listeners.messageToRoom[nsId] = true;
   }
 };
 
