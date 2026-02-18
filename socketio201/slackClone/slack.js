@@ -30,11 +30,15 @@ io.on('connection', (socket) => {
 namespaces.forEach((namespace) => {
   io.of(namespace.endpoint).on('connection', (socket) => {
     socket.on('joinRoom', async (roomTitle, ackCallback) => {
+
+
       // ---------- FIND OLD ROOM ----------
       let oldRoom;
       socket.rooms.forEach((room) => {
+
         if (room !== socket.id) {
           oldRoom = room;
+          console.log(`leaving room ${oldRoom}`);
         }
       });
 
