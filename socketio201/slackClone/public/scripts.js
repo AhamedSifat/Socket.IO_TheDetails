@@ -13,6 +13,13 @@ const addListeners = (nsId) => {
       console.log(newNsData);
     });
 
+    namespaceSocket[nsId].on('updateMembers', (data) => {
+      if (document.querySelector('.curr-room-text').innerText === data.room) {
+        document.querySelector('.curr-room-num-users').innerHTML =
+          `<span class="fa-solid fa-user"></span> ${data.numUsers}`;
+      }
+    });
+
     listers.nsChange[nsId] = true;
   } else {
     console.log('already listening to nsChange for this namespace');
