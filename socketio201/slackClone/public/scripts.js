@@ -1,5 +1,6 @@
 import joinNs from './joinNs.js';
 const socket = io('http://localhost:9000');
+import buildMessageHTML from './buildMessageHtml.js';
 
 let username = 'Sifat';
 
@@ -25,6 +26,7 @@ document.querySelector('#message-form').addEventListener('submit', (e) => {
     date: new Date(),
     avatar: 'https://via.placeholder.com/30',
     username: username,
+    selectedNsId: selectedNsId,
   });
   document.querySelector('#user-message').value = '';
 });
@@ -52,6 +54,7 @@ const addListeners = (nsId) => {
   if (!listeners.messageToRoom[nsId]) {
     namespaceSocket[nsId].on('messageToRoom', (msg) => {
       console.log(msg);
+      document.querySelector('#messages').innerHTML += buildMessageHTML(msg);
     });
     listeners.messageToRoom[nsId] = true;
   }

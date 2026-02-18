@@ -29,7 +29,15 @@ io.on('connection', (socket) => {
 
 namespaces.forEach((namespace) => {
   io.of(namespace.endpoint).on('connection', (socket) => {
-    socket.on('joinRoom', async (roomTitle, ackCallback) => {
+    socket.on('joinRoom', async ({ roomTitle, namespaceId }, ackCallback) => {
+      //NEED TO FETCH THE HISTORY OF THIS ROOM
+
+      const thisNs = namespaces[namespaceId];
+      const thisRoomObj = thisNs.rooms.find(
+        (room) => room.roomTitle === roomTitle,
+      );
+      const thisRoomHistory = thisRoomObj.history;
+
       // ---------- FIND OLD ROOM ----------
       let oldRoom;
       socket.rooms.forEach((room) => {
@@ -64,7 +72,7 @@ namespaces.forEach((namespace) => {
       const count = newSockets.length;
 
       // reply to joining user
-      ackCallback({ numUsers: count });
+      ackCallback({ numUsers: count, history: thisRoomHistory });
 
       // update everyone in new room
       io.of(namespace.endpoint).to(roomTitle).emit('updateMembers', {
@@ -78,6 +86,12 @@ namespaces.forEach((namespace) => {
         const rooms = socket.rooms;
         const currentRoom = [...rooms][1];
         io.of(namespace.endpoint).in(currentRoom).emit('messageToRoom', msg);
+        //add this message to this room's history
+        const thisNs = namespaces[msg.selectedNsId];
+        const thisRoom = thisNs.rooms.find(
+          (room) => room.roomTitle === currentRoom,
+        );
+        thisRoom.addMessage(msg);
       });
     });
   });
