@@ -1,8 +1,16 @@
 import joinNs from './joinNs.js';
-const socket = io('http://localhost:9000');
 import buildMessageHTML from './buildMessageHtml.js';
 
 let username = 'Sifat';
+
+const clientOptions = {
+  query: {
+    username,
+    password: '123',
+  },
+};
+
+const socket = io('http://localhost:9000', clientOptions);
 
 export const namespaceSocket = [];
 const listeners = {

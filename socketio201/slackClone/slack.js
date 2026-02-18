@@ -21,6 +21,17 @@ app.get('/change-namespace', (req, res) => {
   io.of(namespaces[0].endpoint).emit('nsChange', namespaces[0]);
 });
 
+io.use((socket, next) => {
+  const username = socket.handshake.query.username;
+  const password = socket.handshake.query.password;
+  if (password === '123' && username) {
+    return next();
+  }
+
+  socket.disconnect();
+  return next(new Error('Authentication error'));
+});
+
 io.on('connection', (socket) => {
   socket.on('clientConnect', () => {
     socket.emit('nsList', namespaces);
@@ -79,20 +90,20 @@ namespaces.forEach((namespace) => {
         numUsers: count,
         room: roomTitle,
       });
+    });
 
-      socket.on('newMessageToRoom', (msg) => {
-        //broadcast to everyone  this room that there is a new message
-        //how do we know which room the user is in? socket.rooms gives us a Set of rooms that this socket is in, including its own room with its id. So we just need to find the room that is not the socket.id
-        const rooms = socket.rooms;
-        const currentRoom = [...rooms][1];
-        io.of(namespace.endpoint).in(currentRoom).emit('messageToRoom', msg);
-        //add this message to this room's history
-        const thisNs = namespaces[msg.selectedNsId];
-        const thisRoom = thisNs.rooms.find(
-          (room) => room.roomTitle === currentRoom,
-        );
-        thisRoom.addMessage(msg);
-      });
+    socket.on('newMessageToRoom', (msg) => {
+      //broadcast to everyone  this room that there is a new message
+      //how do we know which room the user is in? socket.rooms gives us a Set of rooms that this socket is in, including its own room with its id. So we just need to find the room that is not the socket.id
+      const rooms = socket.rooms;
+      const currentRoom = [...rooms][1];
+      io.of(namespace.endpoint).in(currentRoom).emit('messageToRoom', msg);
+      //add this message to this room's history
+      const thisNs = namespaces[msg.selectedNsId];
+      const thisRoom = thisNs.rooms.find(
+        (room) => room.roomTitle === currentRoom,
+      );
+      thisRoom.addMessage(msg);
     });
   });
 });
